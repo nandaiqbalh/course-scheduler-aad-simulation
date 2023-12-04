@@ -11,6 +11,9 @@ class CourseViewHolder(view: View): RecyclerView.ViewHolder(view) {
 
     private lateinit var course: Course
     private val timeString = itemView.context.resources.getString(R.string.time_format)
+    private val timeCourse: TextView = itemView.findViewById(R.id.tv_time)
+    private val nameCourse: TextView = itemView.findViewById(R.id.tv_course)
+    private val lecturerNameCourse: TextView = itemView.findViewById(R.id.tv_lecturer)
 
     //TODO 7 : Complete ViewHolder to show item
     fun bind(course: Course, clickListener: (Course) -> Unit) {
@@ -19,12 +22,9 @@ class CourseViewHolder(view: View): RecyclerView.ViewHolder(view) {
         course.apply {
             val dayName = getByNumber(day)
             val timeFormat = String.format(timeString, dayName, startTime, endTime)
-            val txtCourse: TextView = itemView.findViewById(R.id.tv_course)
-            val txtTime: TextView = itemView.findViewById(R.id.tv_time)
-            val txtLecture: TextView = itemView.findViewById(R.id.tv_lecturer)
-            txtCourse.text=courseName
-            txtTime.text=timeFormat
-            txtLecture.text=lecturer
+            timeCourse.text = timeFormat
+            nameCourse.text = courseName
+            lecturerNameCourse.text = lecturer
         }
 
         itemView.setOnClickListener {

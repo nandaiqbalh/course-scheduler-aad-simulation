@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.dicoding.courseschedule.R
 import com.dicoding.courseschedule.util.TimePickerFragment
@@ -14,73 +15,83 @@ import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
 import java.util.*
 
-class AddCourseActivity : AppCompatActivity() , TimePickerFragment.DialogTimeListener{
-    private var startTime: String = ""
-    private var endTime: String = ""
+class AddCourseActivity : AppCompatActivity(), TimePickerFragment.DialogTimeListener {
+
     private lateinit var viewModel: AddCourseViewModel
+    private lateinit var view: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add)
+        setContentView(R.layout.activity_add_course)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = getString(R.string.add_course)
 
-        val modelFactory = AddViewModelFactory.createFactory(this)
-        viewModel = ViewModelProvider(this, modelFactory)[AddCourseViewModel::class.java]
-        viewModel.saved.observe(this,{
-            if (it.getContentIfNotHandled() == true) {
+        val factory = AddViewModelFactory.createFactory(this)
+        viewModel = ViewModelProvider(this, factory)[AddCourseViewModel::class.java]
+
+        viewModel.saved.observe(this) {
+            if (it.getContentIfNotHandled() == true)
                 onBackPressed()
-            } else {
-                // Tampilkan pesan error title/starttime/endtime tidak boleh kosong
+            else {
+                val messageToast = getString(R.string.input_empty_message)
+                Toast.makeText(this, messageToast, Toast.LENGTH_SHORT).show()
             }
-        })
+
+        }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_add, menu)
-        return super.onCreateOptionsMenu(menu)
+        return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_insert -> {
-                val courseName = findViewById<TextInputEditText>(R.id.add_ed_course_name).text.toString()
-                val day = findViewById<Spinner>(R.id.spinner_day).selectedItemPosition
-                val courseLecturer = findViewById<TextInputEditText>(R.id.add_ed_lecture).text.toString()
-                val note = findViewById<TextInputEditText>(R.id.add_ed_note).text.toString()
-                viewModel.insertCourse(courseName, day, startTime, endTime, courseLecturer, note)
+                val courseName = findViewById<TextInputEditText>(R.id.add_name_course).text.toString().trim()
+                val dayCourse = findViewById<Spinner>(R.id.add_spinner_day).selectedItemPosition
+                val startTimeCourse = findViewById<TextView>(R.id.add_text_start_time).text.toString().trim()
+                val endTimeCourse = findViewById<TextView>(R.id.add_text_end_time).text.toString().trim()
+                val lecturerCourse = findViewById<TextInputEditText>(R.id.add_name_lecturer).text.toString().trim()
+                val noteCourse = findViewById<TextInputEditText>(R.id.add_note).text.toString().trim()
+                viewModel.insertCourse(courseName, dayCourse,
+                    startTimeCourse, endTimeCourse, lecturerCourse, noteCourse)
                 true
-            } else -> super.onOptionsItemSelected(item)
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
-    fun startTimePick(view: View) {
-        val timePickerFragment = TimePickerFragment()
-        timePickerFragment.show(supportFragmentManager, "startPicker")
+    fun showStartTimePicker(view: View) {
+        TimePickerFragment().show(
+            supportFragmentManager, " startTime"
+        )
+        this.view = view
     }
 
-    fun endTimePick(view: View) {
-        val timePickerFragment = TimePickerFragment()
-        timePickerFragment.show(supportFragmentManager, "endPicker")
+    fun showEndTimePicker(view: View) {
+        TimePickerFragment().show(
+            supportFragmentManager, " endTime"
+        )
+        this.view = view
     }
 
     override fun onDialogTimeSet(tag: String?, hour: Int, minute: Int) {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, hour)
-        calendar.set(Calendar.MINUTE, minute)
+        val calender = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, minute)
+        }
+
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        when (tag) {
-            "startPicker" -> {
-                findViewById<TextView>(R.id.add_tv_start_time).text = timeFormat.format(calendar.time)
-                startTime = timeFormat.format(calendar.time)
+
+        when (view.id) {
+            R.id.add_start_time -> {
+                findViewById<TextView>(R.id.add_text_start_time).text = timeFormat.format(calender.time)
             }
-            "endPicker" -> {
-                findViewById<TextView>(R.id.add_tv_end_time).text = timeFormat.format(calendar.time)
-                endTime = timeFormat.format(calendar.time)
+            R.id.add_end_time -> {
+                findViewById<TextView>(R.id.add_text_end_time).text = timeFormat.format(calender.time)
             }
         }
     }
 
-
 }
-
-
-

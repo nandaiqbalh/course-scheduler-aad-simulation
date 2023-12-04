@@ -25,11 +25,13 @@ class DetailActivity : AppCompatActivity() {
 
         val courseId = intent.getIntExtra(COURSE_ID, 0)
         val factory = DetailViewModelFactory.createFactory(this, courseId)
-        viewModel = ViewModelProvider(this, factory)[DetailViewModel::class.java]
-        viewModel.course.observe(this, { course ->
-            showCourseDetail(course)
 
-        })
+        viewModel = ViewModelProvider(this, factory).get(DetailViewModel::class.java)
+
+        viewModel.course.observe(this) { course ->
+            showCourseDetail(course)
+        }
+
     }
 
     private fun showCourseDetail(course: Course?) {
@@ -37,11 +39,14 @@ class DetailActivity : AppCompatActivity() {
             val timeString = getString(R.string.time_format)
             val dayName = getByNumber(day)
             val timeFormat = String.format(timeString, dayName, startTime, endTime)
-            findViewById<TextView>(R.id.tv_course_name).text = course.courseName
-            findViewById<TextView>(R.id.tv_time).text = timeFormat
-            findViewById<TextView>(R.id.tv_lecturer).text = course.lecturer
-            findViewById<TextView>(R.id.tv_note).text = course.note
-
+            val nameCourse = findViewById<TextView>(R.id.tv_course_name)
+            nameCourse.text = courseName
+            val nameLecturerCourse = findViewById<TextView>(R.id.tv_lecturer)
+            nameLecturerCourse.text = lecturer
+            val timeCourse = findViewById<TextView>(R.id.tv_time)
+            timeCourse.text = timeFormat
+            val courseNote = findViewById<TextView>(R.id.tv_note)
+            courseNote.text = note
         }
     }
 
@@ -66,5 +71,4 @@ class DetailActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
 }

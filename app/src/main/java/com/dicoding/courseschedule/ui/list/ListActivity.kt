@@ -53,9 +53,10 @@ class ListActivity : AppCompatActivity() {
 
     private fun onCourseClick(course: Course) {
         //TODO 8 : Intent and show detailed course
-        val intent = Intent(this, DetailActivity::class.java)
-        intent.putExtra(DetailActivity.COURSE_ID, course.id)
-        startActivity(intent)
+        val toDetail = Intent(this, DetailActivity::class.java).apply {
+            putExtra(DetailActivity.COURSE_ID, course.id)
+        }
+        startActivity(toDetail)
     }
 
     private fun initAction() {
@@ -75,9 +76,9 @@ class ListActivity : AppCompatActivity() {
 
     private fun setFabClick() {
         //TODO 9 : Create AddCourseActivity to set new course schedule
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            val intent = Intent(this, AddCourseActivity::class.java)
-            startActivity(intent)
+        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener {
+            val toAddCourse = Intent(this, AddCourseActivity::class.java)
+            startActivity(toAddCourse)
         }
     }
 
@@ -141,7 +142,6 @@ class ListActivity : AppCompatActivity() {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val course = (viewHolder as CourseViewHolder).getCourse()
             viewModel.delete(course)
-
         }
     }
 }

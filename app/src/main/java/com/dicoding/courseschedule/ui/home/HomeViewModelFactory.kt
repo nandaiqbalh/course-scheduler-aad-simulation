@@ -7,6 +7,7 @@ import com.dicoding.courseschedule.data.DataRepository
 import java.lang.reflect.InvocationTargetException
 
 class HomeViewModelFactory(private val repository: DataRepository?) : ViewModelProvider.Factory {
+
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         try {
             return modelClass.getConstructor(DataRepository::class.java).newInstance(repository)
@@ -29,5 +30,4 @@ class HomeViewModelFactory(private val repository: DataRepository?) : ViewModelP
             return HomeViewModelFactory(DataRepository.getInstance(context))
         }
     }
-
 }

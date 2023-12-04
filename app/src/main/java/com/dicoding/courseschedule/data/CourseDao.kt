@@ -15,18 +15,18 @@ interface CourseDao {
     @RawQuery(observedEntities = [Course::class])
     fun getAll(query: SupportSQLiteQuery): DataSource.Factory<Int, Course>
 
-    @Query("select * from course where id = :id")
+    @Query("SELECT * FROM course WHERE course.id = :id")
     fun getCourse(id: Int): LiveData<Course>
 
-    @Query("select * from course where day = :day")
+    @Query("SELECT * FROM course WHERE day = :day ORDER BY startTime ASC")
     fun getTodaySchedule(day: Int): List<Course>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Course::class)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(course: Course)
 
     @Delete
     fun delete(course: Course)
 
-    @Query("select * from course order by :params")
+    @Query("SELECT * FROM course ORDER BY :params")
     fun sort(params: String): DataSource.Factory<Int, Course>
 }
